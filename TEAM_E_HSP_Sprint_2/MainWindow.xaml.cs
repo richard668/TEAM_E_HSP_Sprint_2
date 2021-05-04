@@ -18,6 +18,7 @@ namespace TEAM_E_HSP_Sprint_2
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
+    /// Test von Richard
     public partial class MainWindow : Window
     {
         public MainWindow()
