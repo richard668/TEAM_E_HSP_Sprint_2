@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace TEAM_E_HSP_Sprint_2
+namespace Wpf_Steuerprogramm
 {
     /// <summary>
     /// Interaktionslogik für "App.xaml"

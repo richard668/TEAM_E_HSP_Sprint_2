@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E1EFD370-5B49-4EDC-A099-7555A01EB50A}</ProjectGuid>
+    <ProjectGuid>{39284968-ADF9-48D9-9F1B-7EA7B5143163}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TEAM_E_HSP_Sprint_2</RootNamespace>
-    <AssemblyName>TEAM_E_HSP_Sprint_2</AssemblyName>
+    <RootNamespace>Wpf_Steuerprogramm</RootNamespace>
+    <AssemblyName>Wpf Steuerprogramm</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,7 +34,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logo_Btu_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.INFITF">
+      <HintPath>Verweise\Interop.INFITF.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Interop.MECMOD">
+      <HintPath>Verweise\Interop.MECMOD.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Interop.PARTITF">
+      <HintPath>Verweise\Interop.PARTITF.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -63,6 +78,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="API.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -93,6 +109,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Bilder\LOGO.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Bilder\Sechskantschraube mit Schaft.jpg" />
+    <Resource Include="Bilder\Senkkopfschraube mit schaft.jpg" />
+    <Resource Include="Bilder\Zylinderkopfschraube mit Schaft.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="logo_Btu_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

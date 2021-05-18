@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 
-namespace TEAM_E_HSP_Sprint_2.Properties
+namespace Wpf_Steuerprogramm.Properties
 {
     /// <summary>
     ///   Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
@@ -43,7 +43,7 @@ namespace TEAM_E_HSP_Sprint_2.Properties
             {
                 if ((resourceMan == null))
                 {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TEAM_E_HSP_Sprint_2.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Wpf_Steuerprogramm.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
