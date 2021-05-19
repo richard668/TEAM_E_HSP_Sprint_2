@@ -16,7 +16,6 @@ namespace Wpf_Steuerprogramm
         MECMOD.PartDocument hsp_catiaPart;
         MECMOD.Sketch hsp_catiaProfil;
         MECMOD.Sketch hsp_catiaProfil_Schlüssel;
-        MECMOD.Sketch hsp_catiaProfil2;
 
         public int Kopf { get; private set; }
         public int Schlüsselweite { get; private set; }
@@ -357,22 +356,18 @@ namespace Wpf_Steuerprogramm
             double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
             string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
 
-            // Hauptkoerper in Bearbeitung definieren
-            hsp_catiaPart.Part.InWorkObject = hsp_catiaPart.Part.MainBody;
-
-            // Block(Balken) erzeugen
+           
+            // Tasche erzeugen
             ShapeFactory catShapeFactory11 = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
 
-
-
-            Pad catPad3 = (Pad)catShapeFactory11.AddNewPocket(hsp_catiaProfil_Schlüssel, Schlüsseltiefe);
+            Pocket catPad3 = catShapeFactory11.AddNewPocket(hsp_catiaProfil_Schlüssel, Schlüsseltiefe); //Befehl fehlerhaft !!!
 
             // Part aktualisieren
             hsp_catiaPart.Part.Update();
         }
 
 
-        private void ProfilSchaft(object[]ParameterListe)
+        /*private void ProfilSchaft(object[]ParameterListe) // Läuft noch nicht
         {
             double Durchmesser = Convert.ToDouble(ParameterListe[1]);
             double Gewindelänge = Convert.ToDouble(ParameterListe[2]);
@@ -387,8 +382,8 @@ namespace Wpf_Steuerprogramm
             hsp_catiaProfil2.CloseEdition();
             // Part aktualisieren
             hsp_catiaPart.Part.Update();
-        }
-
+        }*/
+        
     }
 
 }
