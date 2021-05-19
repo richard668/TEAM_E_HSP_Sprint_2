@@ -16,6 +16,7 @@ namespace Wpf_Steuerprogramm
         MECMOD.PartDocument hsp_catiaPart;
         MECMOD.Sketch hsp_catiaProfil;
         MECMOD.Sketch hsp_catiaProfil_Schlüssel;
+        MECMOD.Sketch hsp_catiaProfil_Schaft;
 
         public int Kopf { get; private set; }
         public int Schlüsselweite { get; private set; }
@@ -46,26 +47,26 @@ namespace Wpf_Steuerprogramm
                     INFITF.Documents catDocuments1 = hsp_catiaApp.Documents;
                     hsp_catiaPart = catDocuments1.Add("Part") as MECMOD.PartDocument;
 
-                    //Erstellt eine Skizze für den Kopf
+                    //Erstellt alle Skizzen
                     ErstelleLeereSkizze();
                     //Erstellt ein Profil vom Kopf
                     ProfilKopf(ParameterListe);
                     //Erstellt einen Block für den Kopf
-                    BlockErstellen(ParameterListe);
-                    
+                    BlockKopfErstellen(ParameterListe);
+
+                    //Erstellt ein Profil für den Schaft
+                    ProfilSchaft(ParameterListe);
+
+                    //Erstellt ein Block für den Schaft
+                    BlockSchaftErstellen(ParameterListe);
+
                     if (Kopf==2)
                     {
                         ErstelleTascheProfil(ParameterListe);
                         ErstelleTasche(ParameterListe);
                     }
-                    //Erstellt eine Skizze für den Schaft
-                    //ErstelleLeereSkizze();
-
-                    //Erstellt ein Profil für den Schaft
-                    //ProfilSchaft(ParameterListe);
-
-                    //Erstellt ein Block für den Schaft
-
+                    
+                    
 
                     //Erstellt Gewinde am Schaft
 
@@ -127,7 +128,8 @@ namespace Wpf_Steuerprogramm
             Sketches catSketches1 = catHybridBody1.HybridSketches;
             OriginElements catOriginElements = hsp_catiaPart.Part.OriginElements;
             Reference catReference1 = (Reference)catOriginElements.PlaneYZ;
-            hsp_catiaProfil =  catSketches1.Add(catReference1);
+            hsp_catiaProfil =  catSketches1.Add(catReference1);            
+            hsp_catiaProfil_Schaft = catSketches1.Add(catReference1);
             hsp_catiaProfil_Schlüssel = catSketches1.Add(catReference1);
 
             // Achsensystem in Skizze erstellen 
@@ -237,7 +239,7 @@ namespace Wpf_Steuerprogramm
         }
 
 
-        private void BlockErstellen(object[] ParameterListe)
+        private void BlockKopfErstellen(object[] ParameterListe)
         {
             double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
             double Durchmesser = Convert.ToDouble(ParameterListe[1]);
@@ -360,30 +362,64 @@ namespace Wpf_Steuerprogramm
             // Tasche erzeugen
             ShapeFactory catShapeFactory11 = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
 
-            Pocket catPad3 = catShapeFactory11.AddNewPocket(hsp_catiaProfil_Schlüssel, Schlüsseltiefe); //Befehl fehlerhaft !!!
+            Pocket catPad3 = catShapeFactory11.AddNewPocket(hsp_catiaProfil_Schlüssel, Schlüsseltiefe);
 
             // Part aktualisieren
             hsp_catiaPart.Part.Update();
         }
 
 
-        /*private void ProfilSchaft(object[]ParameterListe) // Läuft noch nicht
+        private void ProfilSchaft(object[]ParameterListe) // Läuft noch nicht
         {
             double Durchmesser = Convert.ToDouble(ParameterListe[1]);
-            double Gewindelänge = Convert.ToDouble(ParameterListe[2]);
-            double Schaftlänge = Convert.ToDouble(ParameterListe[3]);
+            
+            // Skizze umbenennen
+            hsp_catiaProfil_Schaft.set_Name("Schaft");
 
             // Skizze oeffnen
-            Factory2D catFactory2D2 = hsp_catiaProfil2.OpenEdition();
+            Factory2D catFactory2D2 = hsp_catiaProfil_Schaft.OpenEdition();
 
-            Circle2D catCircle2D1 = catFactory2D2.CreateCircle(0, 0, Durchmesser/2, 0, 0);           
+            
+            Circle2D circle2DSchaft = catFactory2D2.CreateClosedCircle(0, 0, Durchmesser / 2);
 
             // Skizzierer verlassen
-            hsp_catiaProfil2.CloseEdition();
+            hsp_catiaProfil_Schaft.CloseEdition();
             // Part aktualisieren
             hsp_catiaPart.Part.Update();
-        }*/
-        
+        }
+
+        private void BlockSchaftErstellen(object[] ParameterListe)
+        {
+            
+            // Listen Werte wieder in richtige Datentypen umwandeln
+            int Kopf = Convert.ToInt32(ParameterListe[0]);
+            double Gewindelänge = Convert.ToDouble(ParameterListe[2]);
+            double Schaftlänge = Convert.ToDouble(ParameterListe[3]);
+            double Steigung = Convert.ToDouble(ParameterListe[4]);
+            int Gewindeart = Convert.ToInt32(ParameterListe[5]);
+            double Schlüsselweite = Convert.ToDouble(ParameterListe[6]);
+            double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
+            double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
+            string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+
+            // Hauptkoerper in Bearbeitung definieren
+            hsp_catiaPart.Part.InWorkObject = hsp_catiaPart.Part.MainBody;
+
+            // Block(Balken) erzeugen
+            ShapeFactory catShapeFactorySchaft = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
+
+
+
+            Pad catPad1 = catShapeFactorySchaft.AddNewPad(hsp_catiaProfil_Schaft, Gewindelänge+Schaftlänge+Kopfhöhe);
+            // Block umbenennen
+            catPad1.set_Name("Schaft-Block");
+
+
+
+            // Part aktualisieren
+            hsp_catiaPart.Part.Update();
+        }
+
     }
 
 }
