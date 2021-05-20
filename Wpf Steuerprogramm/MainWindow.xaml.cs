@@ -80,7 +80,7 @@ namespace Wpf_Steuerprogramm
 
 
             Bolt.Kopfhöhe = Konsolenprogramm.AusgabeKopfhöhe(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle(), Bolt.WhitworthTabelle(), Bolt.Gewindeart, Bolt.DurchmesserWW_Zoll_mm);
-            Bolt.Kopfdurchmesser = Konsolenprogramm.AusgabeKopfdurchmesser(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
+            Bolt.Kopfdurchmesser = Konsolenprogramm.AusgabeKopfdurchmesser(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle(), Bolt.Gewindeart, Bolt.Schlüsselweite);
             Bolt.Gewindevolumen = Konsolenprogramm.Gewindevolumen(Bolt.Gewindeart, Bolt.Gewindelänge, Bolt.Flankendurchmesser);
             Bolt.Gewindemasse = Konsolenprogramm.Gewindemasse(dichte, Bolt.Gewindevolumen);
             Bolt.Schaftvolumen = Konsolenprogramm.Schaftvolumen(Bolt.Durchmesser, Bolt.Schaftlänge);
@@ -943,34 +943,50 @@ namespace Wpf_Steuerprogramm
             return Schlüsselweite;
         }
 
-        static public double AusgabeKopfdurchmesser(int Kopf, double Durchmesser, double[,] Tabelle)
+        static public double AusgabeKopfdurchmesser(int Kopf, double Durchmesser, double[,] Tabelle, int Gewindeart, double Schlüsselweite)
         {
             double kopfdurchmesser = 0;
             int jj = 0; // Variable die zum hochzählen verwendet werden soll
             int M = 0; // double der in der Tabelle steht in einen int umwandeln
 
 
-            if (Kopf == 2)//Zylinder
+            if (Gewindeart != 3)
             {
-                for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                if (Kopf == 2)//Zylinder
                 {
-                    M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
-                    if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                    for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
                     {
-                        kopfdurchmesser = Tabelle[jj, 8]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
+                        M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
+                        if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                        {
+                            kopfdurchmesser = Tabelle[jj, 8]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
+                        }
+                    }
+                }
+
+                if (Kopf == 3) //Senkkopf
+                {
+                    for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                    {
+                        M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
+                        if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                        {
+                            kopfdurchmesser = Tabelle[jj, 12]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
+                        }
                     }
                 }
             }
 
-            if (Kopf == 3) //Senkkopf
+            if (Gewindeart == 3)
             {
-                for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                if (Kopf == 2)
                 {
-                    M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
-                    if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
-                    {
-                        kopfdurchmesser = Tabelle[jj, 12]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
-                    }
+                    kopfdurchmesser = 2 * Schlüsselweite;
+                }
+
+                if (Kopf == 3)
+                {
+                    kopfdurchmesser = 1.92 * Durchmesser;
                 }
             }
 
