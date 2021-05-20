@@ -68,14 +68,18 @@ namespace Wpf_Steuerprogramm
             if (Bolt.Gewindeart != 3)
             {
                 Bolt.Schlüsselweite = Konsolenprogramm.AusgabeSchlüsselweite(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
+                Bolt.Kopfhöhe = Konsolenprogramm.AusgabeKopfhöhe(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
             }
             if (Bolt.Gewindeart == 3)
             {
                 Bolt.Schlüsselweite = Konsolenprogramm.AusgabeWW_SechskantSchlüsselweite(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
+                Bolt.DurchmesserWW_Zoll_mm = Konsolenprogramm.AusgabeWitworthdurchmesser_mm(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
+                double DurchmesserWW_Zoll_Double = Bolt.DurchmesserWW_Zoll_mm;
+                Bolt.Kopfhöhe = Math.Round(DurchmesserWW_Zoll_Double * 2 / 3, 2);
             }
 
 
-            Bolt.Kopfhöhe = Konsolenprogramm.AusgabeKopfhöhe(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
+
             Bolt.Kopfdurchmesser = Konsolenprogramm.AusgabeKopfdurchmesser(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
             Bolt.Gewindevolumen = Konsolenprogramm.Gewindevolumen(Bolt.Gewindeart, Bolt.Gewindelänge, Bolt.Flankendurchmesser);
             Bolt.Gewindemasse = Konsolenprogramm.Gewindemasse(dichte, Bolt.Gewindevolumen);
@@ -147,6 +151,7 @@ namespace Wpf_Steuerprogramm
             if (Bolt.Gewindeart == 3)
             {
                 Schlüsselweite = "Schlüsselweite: " + Bolt.Schlüsselweite + "mm\n";
+                Kopfhöhe = "Kopfhöhe: " + Bolt.Kopfhöhe + "mm\n";
                 Flankendurchmesser = "Flankendurchmesser: " + Bolt.WhitworthFlankendurchmesser + " mm\n";
                 Gangzahl = "Gangzahl: " + Bolt.Gangzahl + "\n";
                 lbl_Masse.Visibility = Visibility.Visible;
@@ -1247,6 +1252,24 @@ namespace Wpf_Steuerprogramm
             return durchmesserWW;
         }
 
+        static public double AusgabeWitworthdurchmesser_mm(string[,] Witworth, double Durchmesser)
+        {
+            string durchmesserWW_mm = "0";
+
+            for (int jj = 0; jj <= 7; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+            {
+                double M = Convert.ToDouble(Witworth[jj, 1]); //umwandeln der Strings in der Tabelle in double
+                if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                {
+                    durchmesserWW_mm = Witworth[jj, 1]; // Wert aus der Tabelle wird Gangzahl übergeben
+                }
+            }
+
+            double durchmesserWW_mm_Doubble = Convert.ToDouble(durchmesserWW_mm);
+
+            return Math.Round(durchmesserWW_mm_Doubble, 2);
+        }
+
         static public string AusgabeWitworthflankendurchmesser(string[,] Witworth, double Durchmesser)
         {
             string durchmesserWW = "0";
@@ -1278,7 +1301,7 @@ namespace Wpf_Steuerprogramm
             }
             double WW_SK_SW_Double = Convert.ToDouble(WW_SK_SW);
 
-            return WW_SK_SW_Double;
+            return Math.Round(WW_SK_SW_Double, 2);
         }
 
 
@@ -1565,6 +1588,7 @@ namespace Wpf_Steuerprogramm
         public string Schraubenrichtung { get; set; }
         public string SchraubenbezeichnungWW { get; set; }
         public object DurchmesserWW_Zoll { get; set; }
+        public double DurchmesserWW_Zoll_mm { get; internal set; }
 
         public double[,] MetrischeTabelle()
         {
