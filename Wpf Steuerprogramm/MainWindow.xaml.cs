@@ -34,7 +34,7 @@ namespace Wpf_Steuerprogramm
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             double dichte = 0.00785;
-           
+
             Bolt.Gewindeart = rb_Gewindeart();
             (Bolt.Durchmesser, Bolt.DurchmesserWW_Zoll) = Durchmesserauswahl(Bolt.MetrischeTabelle(), Bolt.WhitworthTabelle(), Bolt.Gewindeart);
             Bolt.Gewindelänge = Convert.ToDouble(txtBox_Gewindelänge.Text);
@@ -64,7 +64,17 @@ namespace Wpf_Steuerprogramm
                 Bolt.Kopf = 0;
             }
             Bolt.Flankendurchmesser = Konsolenprogramm.Flankendurchmesser(Bolt.Gewindeart, Bolt.Durchmesser, Bolt.Steigung);
-            Bolt.Schlüsselweite = Konsolenprogramm.AusgabeSchlüsselweite(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
+
+            if (Bolt.Gewindeart != 3)
+            {
+                Bolt.Schlüsselweite = Konsolenprogramm.AusgabeSchlüsselweite(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
+            }
+            if (Bolt.Gewindeart == 3)
+            {
+                Bolt.Schlüsselweite = Konsolenprogramm.AusgabeWW_SechskantSchlüsselweite(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
+            }
+
+
             Bolt.Kopfhöhe = Konsolenprogramm.AusgabeKopfhöhe(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
             Bolt.Kopfdurchmesser = Konsolenprogramm.AusgabeKopfdurchmesser(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
             Bolt.Gewindevolumen = Konsolenprogramm.Gewindevolumen(Bolt.Gewindeart, Bolt.Gewindelänge, Bolt.Flankendurchmesser);
@@ -136,10 +146,11 @@ namespace Wpf_Steuerprogramm
             }
             if (Bolt.Gewindeart == 3)
             {
+                Schlüsselweite = "Schlüsselweite: " + Bolt.Schlüsselweite + "mm\n";
                 Flankendurchmesser = "Flankendurchmesser: " + Bolt.WhitworthFlankendurchmesser + " mm\n";
                 Gangzahl = "Gangzahl: " + Bolt.Gangzahl + "\n";
-                lbl_Masse.Visibility = Visibility.Hidden;
-                lbl_Beschreibung2.Visibility = Visibility.Hidden;
+                lbl_Masse.Visibility = Visibility.Visible;
+                lbl_Beschreibung2.Visibility = Visibility.Visible;
             }
 
 
@@ -552,10 +563,10 @@ namespace Wpf_Steuerprogramm
         #endregion Steuerbefehle WPF
 
         private void btn_CAD_Click(object sender, RoutedEventArgs e)
-        {            
-           
+        {
+
             object[] Parameter = new object[10];
-            Parameter [0] = Bolt.Kopf; //int
+            Parameter[0] = Bolt.Kopf; //int
             Parameter[1] = Bolt.Durchmesser; //double
             Parameter[2] = Bolt.Gewindelänge; //double
             Parameter[3] = Bolt.Schaftlänge; //double
@@ -1253,6 +1264,23 @@ namespace Wpf_Steuerprogramm
             return durchmesserWW;
         }
 
+        static public double AusgabeWW_SechskantSchlüsselweite(string[,] Witworth, double Durchmesser)
+        {
+            string WW_SK_SW = "0";
+
+            for (int jj = 0; jj <= 7; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+            {
+                double M = Convert.ToDouble(Witworth[jj, 1]); //umwandeln der Strings in der Tabelle in double
+                if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                {
+                    WW_SK_SW = Witworth[jj, 6]; // Wert aus der Tabelle wird Gangzahl übergeben
+                }
+            }
+            double WW_SK_SW_Double = Convert.ToDouble(WW_SK_SW);
+
+            return WW_SK_SW_Double;
+        }
+
 
         static public double[,] Tabellen() // Funktion die ein Array zurückgibt
         {
@@ -1415,7 +1443,7 @@ namespace Wpf_Steuerprogramm
             // die Werte können nicht mit Formeln errechnet werden, sondern sind auf diese Tabellenwerte genormt
             // deswegen haben wir die als Tabelle hinterlegt um sie bei den Berechnungen bzw. Ausgaben zu verwenden
 
-            string[,] Witworth = new string[8, 6];
+            string[,] Witworth = new string[8, 7];
 
             //Gewinde Nenndurchmesser
             Witworth[0, 0] = "1/4";
@@ -1476,6 +1504,16 @@ namespace Wpf_Steuerprogramm
             Witworth[5, 5] = "29,43";
             Witworth[6, 5] = "35,39";
             Witworth[7, 5] = "47,19";
+
+            //Sechskant Schlüsselweite
+            Witworth[0, 6] = "11,113";
+            Witworth[1, 6] = "14,288";
+            Witworth[2, 6] = "19,050";
+            Witworth[3, 6] = "28,575";
+            Witworth[4, 6] = "38,100";
+            Witworth[5, 6] = "47,625";
+            Witworth[6, 6] = "57,150";
+            Witworth[7, 6] = "76,200";
 
             return Witworth;
 
@@ -1543,5 +1581,3 @@ namespace Wpf_Steuerprogramm
     #endregion
 
 }
-
-    
