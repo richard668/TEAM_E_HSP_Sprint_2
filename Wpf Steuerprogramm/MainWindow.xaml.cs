@@ -61,25 +61,25 @@ namespace Wpf_Steuerprogramm
                 (Bolt.Gangzahl, Bolt.Steigung) = Konsolenprogramm.BerechnungWitworthSteigung(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
                 txtBox_Steigung.Text = Convert.ToString(Bolt.Steigung);
                 Bolt.Steigung = Convert.ToDouble(txtBox_Steigung.Text);
-                Bolt.Kopf = 0;
+
             }
             Bolt.Flankendurchmesser = Konsolenprogramm.Flankendurchmesser(Bolt.Gewindeart, Bolt.Durchmesser, Bolt.Steigung);
 
             if (Bolt.Gewindeart != 3)
             {
                 Bolt.Schlüsselweite = Konsolenprogramm.AusgabeSchlüsselweite(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
-                Bolt.Kopfhöhe = Konsolenprogramm.AusgabeKopfhöhe(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
+
             }
             if (Bolt.Gewindeart == 3)
             {
-                Bolt.Schlüsselweite = Konsolenprogramm.AusgabeWW_SechskantSchlüsselweite(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
+
+                Bolt.Schlüsselweite = Konsolenprogramm.AusgabeWW_SechskantSchlüsselweite(Bolt.WhitworthTabelle(), Bolt.Durchmesser, Bolt.Kopf);
                 Bolt.DurchmesserWW_Zoll_mm = Konsolenprogramm.AusgabeWitworthdurchmesser_mm(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
-                double DurchmesserWW_Zoll_Double = Bolt.DurchmesserWW_Zoll_mm;
-                Bolt.Kopfhöhe = Math.Round(DurchmesserWW_Zoll_Double * 2 / 3, 2);
+
             }
 
 
-
+            Bolt.Kopfhöhe = Konsolenprogramm.AusgabeKopfhöhe(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle(), Bolt.WhitworthTabelle(), Bolt.Gewindeart, Bolt.DurchmesserWW_Zoll_mm);
             Bolt.Kopfdurchmesser = Konsolenprogramm.AusgabeKopfdurchmesser(Bolt.Kopf, Bolt.Durchmesser, Bolt.MetrischeTabelle());
             Bolt.Gewindevolumen = Konsolenprogramm.Gewindevolumen(Bolt.Gewindeart, Bolt.Gewindelänge, Bolt.Flankendurchmesser);
             Bolt.Gewindemasse = Konsolenprogramm.Gewindemasse(dichte, Bolt.Gewindevolumen);
@@ -977,50 +977,70 @@ namespace Wpf_Steuerprogramm
             return kopfdurchmesser;
         }
 
-        static public double AusgabeKopfhöhe(int Kopf, double Durchmesser, double[,] Tabelle)
+        static public double AusgabeKopfhöhe(int Kopf, double Durchmesser, double[,] Tabelle, string[,] Witworth, int Gewindeart, double DurchmesserWW_Zoll_Double)
         {
             double Kopfhöhe = 0;
             int jj = 0; // Variable die zum hochzählen verwendet werden soll
             int M = 0; // double der in der Tabelle steht in einen int umwandeln
 
-
-            if (Kopf == 1) //Sechskantkopf
+            if (Gewindeart != 3)
             {
-                for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                if (Kopf == 1) //Sechskantkopf
                 {
-                    M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
-                    if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                    for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
                     {
-                        Kopfhöhe = Tabelle[jj, 6]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
+                        M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
+                        if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                        {
+                            Kopfhöhe = Tabelle[jj, 6]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
+                        }
+                    }
+                }
+
+                if (Kopf == 2) //Zylinderkopf
+                {
+                    for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                    {
+                        M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
+                        if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                        {
+                            Kopfhöhe = Tabelle[jj, 0]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
+                        }
+                    }
+                }
+
+                if (Kopf == 3) //Senkkopf
+                {
+                    for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                    {
+                        M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
+                        if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                        {
+                            Kopfhöhe = Tabelle[jj, 10]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
+                        }
                     }
                 }
             }
 
-            if (Kopf == 2) //Zylinderkopf
+            if (Gewindeart == 3)
             {
-                for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                if (Kopf == 1)
                 {
-                    M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
-                    if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
-                    {
-                        Kopfhöhe = Tabelle[jj, 0]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
-                    }
+                    Kopfhöhe = DurchmesserWW_Zoll_Double * 2 / 3;
+                }
+
+                if (Kopf == 2)
+                {
+                    Kopfhöhe = DurchmesserWW_Zoll_Double;
+                }
+
+                if (Kopf == 3)
+                {
+                    Kopfhöhe = DurchmesserWW_Zoll_Double * 0.62;
                 }
             }
 
-            if (Kopf == 3) //Senkkopf
-            {
-                for (jj = 0; jj <= 8; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
-                {
-                    M = Convert.ToInt32(Tabelle[jj, 0]); //umwandeln der Strings in der Tabelle in int
-                    if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
-                    {
-                        Kopfhöhe = Tabelle[jj, 10]; // Wert aus der Tabelle wird Durchgangsbohrung übergeben     
-                    }
-                }
-            }
-
-            return Kopfhöhe;
+            return Math.Round(Kopfhöhe, 2);
         }
 
 
@@ -1287,21 +1307,45 @@ namespace Wpf_Steuerprogramm
             return durchmesserWW;
         }
 
-        static public double AusgabeWW_SechskantSchlüsselweite(string[,] Witworth, double Durchmesser)
+        static public double AusgabeWW_SechskantSchlüsselweite(string[,] Witworth, double Durchmesser, int Kopf)
         {
-            string WW_SK_SW = "0";
+            string WW_SW = "0";
 
-            for (int jj = 0; jj <= 7; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+
+            if (Kopf == 1)
             {
-                double M = Convert.ToDouble(Witworth[jj, 1]); //umwandeln der Strings in der Tabelle in double
-                if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                for (int jj = 0; jj <= 7; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
                 {
-                    WW_SK_SW = Witworth[jj, 6]; // Wert aus der Tabelle wird Gangzahl übergeben
+                    double M = Convert.ToDouble(Witworth[jj, 1]); //umwandeln der Strings in der Tabelle in double
+                    if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                    {
+                        WW_SW = Witworth[jj, 6]; // Wert aus der Tabelle wird Gangzahl übergeben
+                    }
                 }
             }
-            double WW_SK_SW_Double = Convert.ToDouble(WW_SK_SW);
 
-            return Math.Round(WW_SK_SW_Double, 2);
+            if (Kopf == 2)
+            {
+                for (int jj = 0; jj <= 7; jj++) // durchsuchen der Tabelle nach dem richtigen Durchmesser
+                {
+                    double M = Convert.ToDouble(Witworth[jj, 1]); //umwandeln der Strings in der Tabelle in double
+                    if (Durchmesser == M) // Vergleich ob in dem Tabellenfeld der gleiche Wert steht wie in der Eingabe
+                    {
+                        WW_SW = Witworth[jj, 7]; // Wert aus der Tabelle wird Gangzahl übergeben
+                    }
+                }
+            }
+
+            double WW_SW_Double = Convert.ToDouble(WW_SW);
+
+            if (Kopf == 3)
+            {
+                WW_SW_Double = Durchmesser * 2 / 3;
+            }
+
+
+
+            return Math.Round(WW_SW_Double, 2);
         }
 
 
@@ -1466,7 +1510,7 @@ namespace Wpf_Steuerprogramm
             // die Werte können nicht mit Formeln errechnet werden, sondern sind auf diese Tabellenwerte genormt
             // deswegen haben wir die als Tabelle hinterlegt um sie bei den Berechnungen bzw. Ausgaben zu verwenden
 
-            string[,] Witworth = new string[8, 7];
+            string[,] Witworth = new string[8, 8];
 
             //Gewinde Nenndurchmesser
             Witworth[0, 0] = "1/4";
@@ -1537,6 +1581,16 @@ namespace Wpf_Steuerprogramm
             Witworth[5, 6] = "47,625";
             Witworth[6, 6] = "57,150";
             Witworth[7, 6] = "76,200";
+
+            //Zylinderkopf Schlüsselweite
+            Witworth[0, 7] = "4,775";
+            Witworth[1, 7] = "7,938";
+            Witworth[2, 7] = "9,525";
+            Witworth[3, 7] = "15,875";
+            Witworth[4, 7] = "19,050";
+            Witworth[5, 7] = "22,225";
+            Witworth[6, 7] = "25,400";
+            Witworth[7, 7] = "38,100";
 
             return Witworth;
 
