@@ -17,6 +17,7 @@ namespace Wpf_Steuerprogramm
         MECMOD.Sketch hsp_catiaProfil;
         MECMOD.Sketch hsp_catiaProfil_Schlüssel;
         MECMOD.Sketch hsp_catiaProfil_Schaft;
+        MECMOD.Sketch hsp_catiaProfil_Senkkopf;
 
         public int Kopf { get; private set; }
         public int Schlüsselweite { get; private set; }
@@ -49,10 +50,15 @@ namespace Wpf_Steuerprogramm
 
                     //Erstellt alle Skizzen
                     ErstelleLeereSkizze();
+
                     //Erstellt ein Profil vom Kopf
                     ProfilKopf(ParameterListe);
+
                     //Erstellt einen Block für den Kopf
-                    BlockKopfErstellen(ParameterListe);
+                    if (Kopf == 1 | Kopf == 2)
+                    { BlockKopfErstellen(ParameterListe); }
+                    else
+                    { RotationskörperErstellen(); }
 
                     //Erstellt ein Profil für den Schaft
                     ProfilSchaft(ParameterListe);
@@ -60,7 +66,7 @@ namespace Wpf_Steuerprogramm
                     //Erstellt ein Block für den Schaft
                     BlockSchaftErstellen(ParameterListe);
 
-                    if (Kopf==2)
+                    if (Kopf==2 | Kopf == 3)
                     {
                         ErstelleTascheProfil(ParameterListe);
                         ErstelleTasche(ParameterListe);
@@ -128,9 +134,11 @@ namespace Wpf_Steuerprogramm
             Sketches catSketches1 = catHybridBody1.HybridSketches;
             OriginElements catOriginElements = hsp_catiaPart.Part.OriginElements;
             Reference catReference1 = (Reference)catOriginElements.PlaneYZ;
+            Reference catReference2 = (Reference)catOriginElements.PlaneZX;
             hsp_catiaProfil =  catSketches1.Add(catReference1);            
             hsp_catiaProfil_Schaft = catSketches1.Add(catReference1);
             hsp_catiaProfil_Schlüssel = catSketches1.Add(catReference1);
+            hsp_catiaProfil_Senkkopf = catSketches1.Add(catReference2);
 
             // Achsensystem in Skizze erstellen 
             ErzeugeAchsensystem();
@@ -164,17 +172,18 @@ namespace Wpf_Steuerprogramm
 
             // Skizze umbenennen
             hsp_catiaProfil.set_Name("Kopf");
+            hsp_catiaProfil_Senkkopf.set_Name("Senkkopf");
 
-           
-            // Skizze oeffnen
-            Factory2D catFactory2D1 = hsp_catiaProfil.OpenEdition();
-
-            
+                              
             
 
             //Sechskantkopf
             if (Kopf == 1)
             {
+                // Skizze oeffnen
+                Factory2D catFactory2D1 = hsp_catiaProfil.OpenEdition();
+
+
                 //Eckkoordinaten berechnen
                 double Grad = 30;
                 double Halbkreis = 180;
@@ -216,24 +225,58 @@ namespace Wpf_Steuerprogramm
                 Line2D catLine2D6 = catFactory2D1.CreateLine(-h, 0, -x, swr);
                 catLine2D6.StartPoint = catPoint2D6;
                 catLine2D6.EndPoint = catPoint2D1;
+
+                // Skizzierer verlassen
+                hsp_catiaProfil.CloseEdition();
             }
 
             //Zylinderkopf
             if(Kopf == 2)
             {
+                // Skizze oeffnen
+                Factory2D catFactory2D1 = hsp_catiaProfil.OpenEdition();
                 Circle2D circle2DZylinderKopf = catFactory2D1.CreateClosedCircle(0, 0, Kopfdurchmesser/2);
+                // Skizzierer verlassen
+                hsp_catiaProfil.CloseEdition();
 
             }
 
             //Senkkopf
             if (Kopf == 3)
             {
+                // Skizze oeffnen
+                Factory2D catFactory2D1 = hsp_catiaProfil_Senkkopf.OpenEdition();
 
+                //Punkte zeichnen
+                Point2D catPoint2D1 = catFactory2D1.CreatePoint(0, 0);
+                Point2D catPoint2D2 = catFactory2D1.CreatePoint(0, Kopfhöhe);
+                Point2D catPoint2D3 = catFactory2D1.CreatePoint(Durchmesser / 2, Kopfhöhe);
+                Point2D catPoint2D4 = catFactory2D1.CreatePoint(Kopfdurchmesser/2, 0);
+
+
+                //Linien zeichnen
+                Line2D catLine2D1 = catFactory2D1.CreateLine(0, 0, 0, Kopfhöhe);
+                catLine2D1.StartPoint = catPoint2D1;
+                catLine2D1.EndPoint = catPoint2D2;
+
+                Line2D catLine2D2 = catFactory2D1.CreateLine(0, Kopfhöhe, Durchmesser / 2, Kopfhöhe);
+                catLine2D2.StartPoint = catPoint2D2;
+                catLine2D2.EndPoint = catPoint2D3;
+
+                Line2D catLine2D3 = catFactory2D1.CreateLine(Durchmesser / 2, Kopfhöhe, Kopfdurchmesser/2, 0);
+                catLine2D3.StartPoint = catPoint2D3;
+                catLine2D3.EndPoint = catPoint2D4;
+
+                Line2D catLine2D4 = catFactory2D1.CreateLine(Kopfdurchmesser/2, 0, 0, 0);
+                catLine2D4.StartPoint = catPoint2D4;
+                catLine2D4.EndPoint = catPoint2D1;
+
+                // Skizzierer verlassen
+                hsp_catiaProfil.CloseEdition();
             }
 
 
-            // Skizzierer verlassen
-            hsp_catiaProfil.CloseEdition();
+           
             // Part aktualisieren
             hsp_catiaPart.Part.Update();
         }
@@ -369,7 +412,7 @@ namespace Wpf_Steuerprogramm
         }
 
 
-        private void ProfilSchaft(object[]ParameterListe) // Läuft noch nicht
+        private void ProfilSchaft(object[]ParameterListe)
         {
             double Durchmesser = Convert.ToDouble(ParameterListe[1]);
             
@@ -418,6 +461,16 @@ namespace Wpf_Steuerprogramm
 
             // Part aktualisieren
             hsp_catiaPart.Part.Update();
+        }
+
+        private void RotationskörperErstellen()
+        {
+            // Hauptkoerper in Bearbeitung definieren
+            hsp_catiaPart.Part.InWorkObject = hsp_catiaPart.Part.MainBody;
+
+            //Rotationskörper erzeugen
+            ShapeFactory catShapeFactorySenkkopf = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
+            
         }
 
     }
