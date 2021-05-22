@@ -470,7 +470,9 @@ namespace Wpf_Steuerprogramm
 
             //Rotationskörper erzeugen
             ShapeFactory catShapeFactorySenkkopf = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
-            
+
+            Rib senkKopf = catShapeFactorySenkkopf.AddNewRib(hsp_catiaProfil_Senkkopf, hsp_catiaProfil_Schaft);
+
         }
 
     }
