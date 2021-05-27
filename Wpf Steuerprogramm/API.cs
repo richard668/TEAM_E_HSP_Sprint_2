@@ -497,21 +497,48 @@ namespace Wpf_Steuerprogramm
             myPart = hsp_catiaPart.Part;
             // Gewinde...
             // ... Referenzen lateral und limit erzeugen
-            Reference RefMantelflaeche = myPart.CreateReferenceFromBRepName(
-                "RSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
-            Reference RefFrontflaeche = myPart.CreateReferenceFromBRepName(
-                "RSur:(Face:(Brp:(Pad.2;2);None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
 
-            // ... Gewinde erzeugen, Parameter setzen
-            PARTITF.Thread thread1 = catShapeFactorySchaft.AddNewThreadWithOutRef();
-            thread1.Side = CatThreadSide.catRightSide;
-            thread1.Diameter =Durchmesser;
-            thread1.Depth = Gewindelänge;
-            thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
-            thread1.LimitFaceElement = RefFrontflaeche; // Referenz limit
+            Reference RefMantelflaeche;
+            Reference RefFrontflaeche;
 
-            if (Gewindeart == 1)
+            if (Kopf!=3&&Gewindeart==1)
             {
+                RefMantelflaeche = myPart.CreateReferenceFromBRepName(
+                "RSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
+                
+                RefFrontflaeche = myPart.CreateReferenceFromBRepName(
+                    "RSur:(Face:(Brp:(Pad.2;2);None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
+
+                // ... Gewinde erzeugen, Parameter setzen
+                PARTITF.Thread thread1 = catShapeFactorySchaft.AddNewThreadWithOutRef();
+                thread1.Side = CatThreadSide.catRightSide;
+                thread1.Diameter = Durchmesser;
+                thread1.Depth = Gewindelänge;
+                thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
+                thread1.LimitFaceElement = RefFrontflaeche; // Referenz limit
+
+                // ... Standardgewinde gesteuert über eine Konstruktionstabelle
+                thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
+                thread1.Diameter = Durchmesser;
+                thread1.Pitch = Steigung;
+            }
+
+            if (Kopf==3&&Gewindeart==1)
+            {
+                RefMantelflaeche = myPart.CreateReferenceFromBRepName(
+                "RSur:(Face:(Brp:(Pad.1;0:(Brp:(Sketch.2;1)));None:();Cf12:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR29)", Schaft);
+
+                RefFrontflaeche = myPart.CreateReferenceFromBRepName(
+                    "RSur:(Face:(Brp:(Pad.1;2);None:();Cf12:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR29)", Schaft);
+
+                // ... Gewinde erzeugen, Parameter setzen
+                PARTITF.Thread thread1 = catShapeFactorySchaft.AddNewThreadWithOutRef();
+                thread1.Side = CatThreadSide.catRightSide;
+                thread1.Diameter = Durchmesser;
+                thread1.Depth = Gewindelänge;
+                thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
+                thread1.LimitFaceElement = RefFrontflaeche; // Referenz limit
+
                 // ... Standardgewinde gesteuert über eine Konstruktionstabelle
                 thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
                 thread1.Diameter = Durchmesser;
