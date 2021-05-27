@@ -27,7 +27,7 @@ namespace Wpf_Steuerprogramm
         public int Schlüsselweite { get; private set; }
         public int Kopfdurchmesser { get; private set; }
 
-        public CAD(object [] ParameterListe)
+        public CAD(object[] ParameterListe)
         {
             // Listen Werte wieder in richtige Datentypen umwandeln
             int Kopf = Convert.ToInt32(ParameterListe[0]);
@@ -45,7 +45,7 @@ namespace Wpf_Steuerprogramm
             {
 
                 //Abfrage ob Catia geöffnet ist
-                if(CatiaLaeuft())
+                if (CatiaLaeuft())
                 {
 
                     //Erstellt ein neues Part
@@ -70,7 +70,7 @@ namespace Wpf_Steuerprogramm
                     //Erstellt ein Block für den Schaft
                     BlockSchaftErstellen(ParameterListe);
 
-                    if (Kopf==2 | Kopf == 3)
+                    if (Kopf == 2 | Kopf == 3)
                     {
                         ErstelleTascheProfil(ParameterListe);
                         ErstelleTasche(ParameterListe);
@@ -86,7 +86,7 @@ namespace Wpf_Steuerprogramm
 
                 else
                 {
-                    MessageBox.Show("Laufende Catia Application nicht gefunden");        
+                    MessageBox.Show("Laufende Catia Application nicht gefunden");
                 }
 
             }
@@ -139,7 +139,7 @@ namespace Wpf_Steuerprogramm
             OriginElements catOriginElements = hsp_catiaPart.Part.OriginElements;
             Reference catReference1 = (Reference)catOriginElements.PlaneYZ;
             Reference catReference2 = (Reference)catOriginElements.PlaneZX;
-            hsp_catiaProfil =  catSketches1.Add(catReference1);            
+            hsp_catiaProfil = catSketches1.Add(catReference1);
             hsp_catiaProfil_Schaft = catSketches1.Add(catReference1);
             hsp_catiaProfil_Schlüssel = catSketches1.Add(catReference1);
             hsp_catiaProfil_Senkkopf = catSketches1.Add(catReference2);
@@ -178,8 +178,8 @@ namespace Wpf_Steuerprogramm
             hsp_catiaProfil.set_Name("Kopf");
             hsp_catiaProfil_Senkkopf.set_Name("Senkkopf");
 
-                              
-            
+
+
 
             //Sechskantkopf
             if (Kopf == 1)
@@ -193,10 +193,10 @@ namespace Wpf_Steuerprogramm
                 double Halbkreis = 180;
                 double Winkel = Grad / Halbkreis * Math.PI;
                 double swr = Schlüsselweite / 2;
-                double x = Math.Tan(Winkel) *swr;
+                double x = Math.Tan(Winkel) * swr;
                 double h = Schlüsselweite / (2 * Math.Cos(Winkel));
 
-                
+
                 //Punkte zeichnen
                 Point2D catPoint2D1 = catFactory2D1.CreatePoint(-x, swr);
                 Point2D catPoint2D2 = catFactory2D1.CreatePoint(x, swr);
@@ -235,11 +235,11 @@ namespace Wpf_Steuerprogramm
             }
 
             //Zylinderkopf
-            if(Kopf == 2)
+            if (Kopf == 2)
             {
                 // Skizze oeffnen
                 Factory2D catFactory2D1 = hsp_catiaProfil.OpenEdition();
-                Circle2D circle2DZylinderKopf = catFactory2D1.CreateClosedCircle(0, 0, Kopfdurchmesser/2);
+                Circle2D circle2DZylinderKopf = catFactory2D1.CreateClosedCircle(0, 0, Kopfdurchmesser / 2);
                 // Skizzierer verlassen
                 hsp_catiaProfil.CloseEdition();
 
@@ -255,7 +255,7 @@ namespace Wpf_Steuerprogramm
                 Point2D catPoint2D1 = catFactory2D1.CreatePoint(0, 0);
                 Point2D catPoint2D2 = catFactory2D1.CreatePoint(0, Kopfhöhe);
                 Point2D catPoint2D3 = catFactory2D1.CreatePoint(Durchmesser / 2, Kopfhöhe);
-                Point2D catPoint2D4 = catFactory2D1.CreatePoint(Kopfdurchmesser/2, 0);
+                Point2D catPoint2D4 = catFactory2D1.CreatePoint(Kopfdurchmesser / 2, 0);
 
 
                 //Linien zeichnen
@@ -267,11 +267,11 @@ namespace Wpf_Steuerprogramm
                 catLine2D2.StartPoint = catPoint2D2;
                 catLine2D2.EndPoint = catPoint2D3;
 
-                Line2D catLine2D3 = catFactory2D1.CreateLine(Durchmesser / 2, Kopfhöhe, Kopfdurchmesser/2, 0);
+                Line2D catLine2D3 = catFactory2D1.CreateLine(Durchmesser / 2, Kopfhöhe, Kopfdurchmesser / 2, 0);
                 catLine2D3.StartPoint = catPoint2D3;
                 catLine2D3.EndPoint = catPoint2D4;
 
-                Line2D catLine2D4 = catFactory2D1.CreateLine(Kopfdurchmesser/2, 0, 0, 0);
+                Line2D catLine2D4 = catFactory2D1.CreateLine(Kopfdurchmesser / 2, 0, 0, 0);
                 catLine2D4.StartPoint = catPoint2D4;
                 catLine2D4.EndPoint = catPoint2D1;
 
@@ -280,7 +280,7 @@ namespace Wpf_Steuerprogramm
             }
 
 
-           
+
             // Part aktualisieren
             hsp_catiaPart.Part.Update();
         }
@@ -405,7 +405,7 @@ namespace Wpf_Steuerprogramm
             double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
             string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
 
-           
+
             // Tasche erzeugen
             ShapeFactory catShapeFactory11 = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
 
@@ -416,17 +416,17 @@ namespace Wpf_Steuerprogramm
         }
 
 
-        private void ProfilSchaft(object[]ParameterListe)
+        private void ProfilSchaft(object[] ParameterListe)
         {
             double Durchmesser = Convert.ToDouble(ParameterListe[1]);
-            
+
             // Skizze umbenennen
             hsp_catiaProfil_Schaft.set_Name("Schaft");
 
             // Skizze oeffnen
             Factory2D catFactory2D2 = hsp_catiaProfil_Schaft.OpenEdition();
 
-            
+
             Circle2D circle2DSchaft = catFactory2D2.CreateClosedCircle(0, 0, Durchmesser / 2);
 
             // Skizzierer verlassen
@@ -437,7 +437,7 @@ namespace Wpf_Steuerprogramm
 
         private void BlockSchaftErstellen(object[] ParameterListe)
         {
-            
+
             // Listen Werte wieder in richtige Datentypen umwandeln
             int Kopf = Convert.ToInt32(ParameterListe[0]);
             double Gewindelänge = Convert.ToDouble(ParameterListe[2]);
@@ -457,7 +457,7 @@ namespace Wpf_Steuerprogramm
 
 
 
-            Schaft = catShapeFactorySchaft.AddNewPad(hsp_catiaProfil_Schaft, Gewindelänge+Schaftlänge+Kopfhöhe);
+            Schaft = catShapeFactorySchaft.AddNewPad(hsp_catiaProfil_Schaft, Gewindelänge + Schaftlänge + Kopfhöhe);
             // Block umbenennen
             Schaft.set_Name("Schaft-Block");
 
@@ -501,11 +501,11 @@ namespace Wpf_Steuerprogramm
             Reference RefMantelflaeche;
             Reference RefFrontflaeche;
 
-            if (Kopf!=3&&Gewindeart==1)
+            if (Kopf != 3)
             {
                 RefMantelflaeche = myPart.CreateReferenceFromBRepName(
                 "RSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
-                
+
                 RefFrontflaeche = myPart.CreateReferenceFromBRepName(
                     "RSur:(Face:(Brp:(Pad.2;2);None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
 
@@ -517,13 +517,27 @@ namespace Wpf_Steuerprogramm
                 thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
                 thread1.LimitFaceElement = RefFrontflaeche; // Referenz limit
 
+                if (Gewindeart == 1)
+                {
+                    thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
+
+                }
+
+                if (Gewindeart == 2)
+                {
+                    // Kein Standard, weil individuelle Steigungen eingegeben werden können!
+                }
+
+                if (Gewindeart == 3)
+                {
+                    thread1.CreateUserStandardDesignTable("Rohrgewinde I A ISO228", @"C:\Program Files\Dassault Systemes\B30\win_b64\resources\standard\thread\Rohrgewinde I A ISO228.xml");
+                }
                 // ... Standardgewinde gesteuert über eine Konstruktionstabelle
-                thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
                 thread1.Diameter = Durchmesser;
                 thread1.Pitch = Steigung;
             }
 
-            if (Kopf==3&&Gewindeart==1)
+            if (Kopf == 3)
             {
                 RefMantelflaeche = myPart.CreateReferenceFromBRepName(
                 "RSur:(Face:(Brp:(Pad.1;0:(Brp:(Sketch.2;1)));None:();Cf12:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR29)", Schaft);
@@ -539,13 +553,29 @@ namespace Wpf_Steuerprogramm
                 thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
                 thread1.LimitFaceElement = RefFrontflaeche; // Referenz limit
 
+
+                if (Gewindeart == 1)
+                {
+                    thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
+
+                }
+
+                if (Gewindeart == 2)
+                {
+                    // Kein Standard, weil individuelle Steigungen eingegeben werden können!
+                }
+
+                if (Gewindeart == 3)
+                {
+                    thread1.CreateUserStandardDesignTable("Rohrgewinde I A ISO228", @"C:\Program Files\Dassault Systemes\B30\win_b64\resources\standard\thread\Rohrgewinde I A ISO228.xml");
+                }
+
                 // ... Standardgewinde gesteuert über eine Konstruktionstabelle
-                thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
                 thread1.Diameter = Durchmesser;
                 thread1.Pitch = Steigung;
             }
 
-                        
+
             // Part update und fertig
             myPart.Update();
         }
