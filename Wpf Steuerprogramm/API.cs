@@ -18,6 +18,10 @@ namespace Wpf_Steuerprogramm
         MECMOD.Sketch hsp_catiaProfil_Schlüssel;
         MECMOD.Sketch hsp_catiaProfil_Schaft;
         MECMOD.Sketch hsp_catiaProfil_Senkkopf;
+        Part myPart;
+        Pad Schaft;
+        ShapeFactory catShapeFactorySchaft;
+
 
         public int Kopf { get; private set; }
         public int Schlüsselweite { get; private set; }
@@ -71,11 +75,11 @@ namespace Wpf_Steuerprogramm
                         ErstelleTascheProfil(ParameterListe);
                         ErstelleTasche(ParameterListe);
                     }
-                    
-                    
+
+
 
                     //Erstellt Gewinde am Schaft
-
+                    Gewindefeature(ParameterListe);
 
 
                 }
@@ -449,13 +453,13 @@ namespace Wpf_Steuerprogramm
             hsp_catiaPart.Part.InWorkObject = hsp_catiaPart.Part.MainBody;
 
             // Block(Balken) erzeugen
-            ShapeFactory catShapeFactorySchaft = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
+            catShapeFactorySchaft = (ShapeFactory)hsp_catiaPart.Part.ShapeFactory;
 
 
 
-            Pad catPad1 = catShapeFactorySchaft.AddNewPad(hsp_catiaProfil_Schaft, Gewindelänge+Schaftlänge+Kopfhöhe);
+            Schaft = catShapeFactorySchaft.AddNewPad(hsp_catiaProfil_Schaft, Gewindelänge+Schaftlänge+Kopfhöhe);
             // Block umbenennen
-            catPad1.set_Name("Schaft-Block");
+            Schaft.set_Name("Schaft-Block");
 
 
 
@@ -463,7 +467,7 @@ namespace Wpf_Steuerprogramm
             hsp_catiaPart.Part.Update();
         }
 
-        private void RotationskörperErstellen()
+        internal void RotationskörperErstellen()
         {
             // Hauptkoerper in Bearbeitung definieren
             hsp_catiaPart.Part.InWorkObject = hsp_catiaPart.Part.MainBody;
@@ -475,6 +479,45 @@ namespace Wpf_Steuerprogramm
 
         }
 
+
+        internal void Gewindefeature(object[] ParameterListe)
+        {
+
+            // Listen Werte wieder in richtige Datentypen umwandeln
+            int Kopf = Convert.ToInt32(ParameterListe[0]);
+            double Durchmesser = Convert.ToDouble(ParameterListe[1]);
+            double Gewindelänge = Convert.ToDouble(ParameterListe[2]);
+            double Schaftlänge = Convert.ToDouble(ParameterListe[3]);
+            double Steigung = Convert.ToDouble(ParameterListe[4]);
+            int Gewindeart = Convert.ToInt32(ParameterListe[5]);
+            double Schlüsselweite = Convert.ToDouble(ParameterListe[6]);
+            double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
+            double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
+            string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+            myPart = hsp_catiaPart.Part;
+            // Gewinde...
+            // ... Referenzen lateral und limit erzeugen
+            Reference RefMantelflaeche = myPart.CreateReferenceFromBRepName(
+                "RSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
+            Reference RefFrontflaeche = myPart.CreateReferenceFromBRepName(
+                "RSur:(Face:(Brp:(Pad.2;2);None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
+
+            // ... Gewinde erzeugen, Parameter setzen
+            PARTITF.Thread thread1 = catShapeFactorySchaft.AddNewThreadWithOutRef();
+            thread1.Side = CatThreadSide.catRightSide;
+            thread1.Diameter =Durchmesser;
+            thread1.Depth = Gewindelänge;
+            thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
+            thread1.LimitFaceElement = RefFrontflaeche; // Referenz limit
+
+            // ... Standardgewinde gesteuert über eine Konstruktionstabelle
+            thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
+            thread1.Diameter = Durchmesser;
+            thread1.Pitch = Steigung;
+
+            // Part update und fertig
+            myPart.Update();
+        }
     }
 
 }
