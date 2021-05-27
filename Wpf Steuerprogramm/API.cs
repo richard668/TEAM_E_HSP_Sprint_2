@@ -510,11 +510,15 @@ namespace Wpf_Steuerprogramm
             thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
             thread1.LimitFaceElement = RefFrontflaeche; // Referenz limit
 
-            // ... Standardgewinde gesteuert über eine Konstruktionstabelle
-            thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
-            thread1.Diameter = Durchmesser;
-            thread1.Pitch = Steigung;
+            if (Gewindeart == 1)
+            {
+                // ... Standardgewinde gesteuert über eine Konstruktionstabelle
+                thread1.CreateUserStandardDesignTable("Metric_Thick_Pitch", @"C:\Program Files\Dassault Systemes\B28\win_b64\resources\standard\thread\Metric_Thick_Pitch.xml");
+                thread1.Diameter = Durchmesser;
+                thread1.Pitch = Steigung;
+            }
 
+                        
             // Part update und fertig
             myPart.Update();
         }
