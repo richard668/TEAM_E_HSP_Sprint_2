@@ -18,6 +18,7 @@ namespace Wpf_Steuerprogramm
         MECMOD.Sketch hsp_catiaProfil_Schlüssel;
         MECMOD.Sketch hsp_catiaProfil_Schaft;
         MECMOD.Sketch hsp_catiaProfil_Senkkopf;
+        MECMOD.Sketch hsp_catiaProfil_Gewinde;
         Part myPart;
         Pad Schaft;
         ShapeFactory catShapeFactorySchaft;
@@ -79,8 +80,8 @@ namespace Wpf_Steuerprogramm
 
 
                     //Erstellt Gewinde am Schaft
-                    Gewindefeature(ParameterListe);
-
+                    //Gewindefeature(ParameterListe);
+                    makeGewindeSkizze(ParameterListe);
 
                 }
 
@@ -143,6 +144,7 @@ namespace Wpf_Steuerprogramm
             hsp_catiaProfil_Schaft = catSketches1.Add(catReference1);
             hsp_catiaProfil_Schlüssel = catSketches1.Add(catReference1);
             hsp_catiaProfil_Senkkopf = catSketches1.Add(catReference2);
+            hsp_catiaProfil_Gewinde = catSketches1.Add(catReference2);
 
             // Achsensystem in Skizze erstellen 
             ErzeugeAchsensystem();
@@ -579,6 +581,76 @@ namespace Wpf_Steuerprogramm
             // Part update und fertig
             myPart.Update();
         }
+
+        // Separate Skizzenerzeugung für de Helix
+        public Sketch makeGewindeSkizze(object[] ParameterListe)
+        {
+            // Listen Werte wieder in richtige Datentypen umwandeln
+            int Kopf = Convert.ToInt32(ParameterListe[0]);
+            double Durchmesser = Convert.ToDouble(ParameterListe[1]);
+            double Gewindelänge = Convert.ToDouble(ParameterListe[2]);
+            double Schaftlänge = Convert.ToDouble(ParameterListe[3]);
+            double Steigung = Convert.ToDouble(ParameterListe[4]);
+            int Gewindeart = Convert.ToInt32(ParameterListe[5]);
+            double Schlüsselweite = Convert.ToDouble(ParameterListe[6]);
+            double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
+            double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
+            string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+
+            Double P = Steigung;
+            Double Ri = Durchmesser / 2;
+
+            OriginElements catOriginElements = hsp_catiaPart.Part.OriginElements;
+
+            hsp_catiaPart.Part.InWorkObject = hsp_catiaProfil_Gewinde;
+            hsp_catiaProfil_Gewinde.set_Name("Gewinde");
+
+            double V_oben_links = -(((((Math.Sqrt(3) / 2) * P) / 6) + 0.6134 * P) * Math.Tan((30 * Math.PI) / 180));
+            double H_oben_links = Ri;
+
+            double V_oben_rechts = (((((Math.Sqrt(3) / 2) * P) / 6) + 0.6134 * P) * Math.Tan((30 * Math.PI) / 180));
+            double H_oben_rechts = Ri;
+
+            double V_unten_links = -((0.1443 * P) * Math.Sin((60 * Math.PI) / 180));
+            double H_unten_links = Ri - (0.6134 * P - 0.1443 * P) - Math.Sqrt(Math.Pow((0.1443 * P), 2) - Math.Pow((0.1443 * P) * Math.Sin((60 * Math.PI) / 180), 2));
+
+            double V_unten_rechts = (0.1443 * P) * Math.Sin((60 * Math.PI) / 180);
+            double H_unten_rechts = Ri - (0.6134 * P - 0.1443 * P) - Math.Sqrt(Math.Pow((0.1443 * P), 2) - Math.Pow((0.1443 * P) * Math.Sin((60 * Math.PI) / 180), 2));
+
+            double V_Mittelpunkt = 0;
+            double H_Mittelpunkt = Ri - ((0.6134 * P) - 0.1443 * P);
+
+            Factory2D catFactory2D2 = hsp_catiaProfil_Gewinde.OpenEdition();
+
+            Point2D Oben_links = catFactory2D2.CreatePoint(H_oben_links, V_oben_links);
+            Point2D Oben_rechts = catFactory2D2.CreatePoint(H_oben_rechts, V_oben_rechts);
+            Point2D Unten_links = catFactory2D2.CreatePoint(H_unten_links, V_unten_links);
+            Point2D Unten_rechts = catFactory2D2.CreatePoint(H_unten_rechts, V_unten_rechts);
+            Point2D Mittelpunkt = catFactory2D2.CreatePoint(H_Mittelpunkt, V_Mittelpunkt);
+
+            Line2D Oben = catFactory2D2.CreateLine(H_oben_links, V_oben_links, H_oben_rechts, V_oben_rechts);
+            Oben.StartPoint = Oben_links;
+            Oben.EndPoint = Oben_rechts;
+
+            Line2D Rechts = catFactory2D2.CreateLine(H_oben_rechts, V_oben_rechts, H_unten_rechts, V_unten_rechts);
+            Rechts.StartPoint = Oben_rechts;
+            Rechts.EndPoint = Unten_rechts;
+
+            Circle2D Verrundung = catFactory2D2.CreateCircle(H_Mittelpunkt, V_Mittelpunkt, 0.1443 * P, 0, 0);
+            Verrundung.CenterPoint = Mittelpunkt;
+            Verrundung.StartPoint = Unten_rechts;
+            Verrundung.EndPoint = Unten_links;
+
+            Line2D Links = catFactory2D2.CreateLine(H_oben_links, V_oben_links, H_unten_links, V_unten_links);
+            Links.StartPoint = Unten_links;
+            Links.EndPoint = Oben_links;
+
+            hsp_catiaProfil_Gewinde.CloseEdition();
+            hsp_catiaPart.Part.Update();
+
+            return hsp_catiaProfil_Gewinde;
+        }
+
     }
 
 }
