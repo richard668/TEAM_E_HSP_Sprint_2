@@ -7,6 +7,7 @@ using System.Windows;
 using INFITF;
 using MECMOD;
 using PARTITF;
+using HybridShapeTypeLib;
 
 namespace Wpf_Steuerprogramm
 {
@@ -19,10 +20,14 @@ namespace Wpf_Steuerprogramm
         MECMOD.Sketch hsp_catiaProfil_Schaft;
         MECMOD.Sketch hsp_catiaProfil_Senkkopf;
         MECMOD.Sketch hsp_catiaProfil_Gewinde;
+        MECMOD.Sketch hsp_catiaSkizzeTest;
+
         Part myPart;
         Pad Schaft;
         ShapeFactory catShapeFactorySchaft;
-
+        HybridShapeFactory HSF;
+        Body myBody;
+        Sketches catSketches1;
 
         public int Kopf { get; private set; }
         public int Schlüsselweite { get; private set; }
@@ -78,10 +83,11 @@ namespace Wpf_Steuerprogramm
                     }
 
 
-
                     //Erstellt Gewinde am Schaft
                     //Gewindefeature(ParameterListe);
-                    makeGewindeSkizze(ParameterListe);
+                    //makeGewindeSkizze(ParameterListe);
+                    ErzeugeGewindeHelix(ParameterListe);
+
 
                 }
 
@@ -136,15 +142,18 @@ namespace Wpf_Steuerprogramm
             }
             catHybridBody1.set_Name("Profile");
             // neue Skizze im ausgewaehlten geometrischen Set anlegen
-            Sketches catSketches1 = catHybridBody1.HybridSketches;
+            catSketches1 = catHybridBody1.HybridSketches;
             OriginElements catOriginElements = hsp_catiaPart.Part.OriginElements;
             Reference catReference1 = (Reference)catOriginElements.PlaneYZ;
             Reference catReference2 = (Reference)catOriginElements.PlaneZX;
+            //Reference catReference3 = (Reference)catOriginElements.PlaneXY;
+
             hsp_catiaProfil = catSketches1.Add(catReference1);
             hsp_catiaProfil_Schaft = catSketches1.Add(catReference1);
             hsp_catiaProfil_Schlüssel = catSketches1.Add(catReference1);
             hsp_catiaProfil_Senkkopf = catSketches1.Add(catReference2);
             hsp_catiaProfil_Gewinde = catSketches1.Add(catReference2);
+            hsp_catiaSkizzeTest = catSketches1.Add(catReference2);
 
             // Achsensystem in Skizze erstellen 
             ErzeugeAchsensystem();
@@ -597,27 +606,29 @@ namespace Wpf_Steuerprogramm
             double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
             string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
 
+            double Gesamtlänge = Gewindelänge + Schaftlänge + Kopfhöhe;
             Double P = Steigung;
             Double Ri = Durchmesser / 2;
 
             OriginElements catOriginElements = hsp_catiaPart.Part.OriginElements;
+            //Reference catReference3 = (Reference)catOriginElements.PlaneXY;
 
             hsp_catiaPart.Part.InWorkObject = hsp_catiaProfil_Gewinde;
             hsp_catiaProfil_Gewinde.set_Name("Gewinde");
 
-            double V_oben_links = -(((((Math.Sqrt(3) / 2) * P) / 6) + 0.6134 * P) * Math.Tan((30 * Math.PI) / 180));
+            double V_oben_links = Gesamtlänge - (((((Math.Sqrt(3) / 2) * P) / 6) + 0.6134 * P) * Math.Tan((30 * Math.PI) / 180));
             double H_oben_links = Ri;
 
-            double V_oben_rechts = (((((Math.Sqrt(3) / 2) * P) / 6) + 0.6134 * P) * Math.Tan((30 * Math.PI) / 180));
+            double V_oben_rechts = Gesamtlänge + (((((Math.Sqrt(3) / 2) * P) / 6) + 0.6134 * P) * Math.Tan((30 * Math.PI) / 180));
             double H_oben_rechts = Ri;
 
-            double V_unten_links = -((0.1443 * P) * Math.Sin((60 * Math.PI) / 180));
+            double V_unten_links = Gesamtlänge - ((0.1443 * P) * Math.Sin((60 * Math.PI) / 180));
             double H_unten_links = Ri - (0.6134 * P - 0.1443 * P) - Math.Sqrt(Math.Pow((0.1443 * P), 2) - Math.Pow((0.1443 * P) * Math.Sin((60 * Math.PI) / 180), 2));
 
-            double V_unten_rechts = (0.1443 * P) * Math.Sin((60 * Math.PI) / 180);
+            double V_unten_rechts = Gesamtlänge + (0.1443 * P) * Math.Sin((60 * Math.PI) / 180);
             double H_unten_rechts = Ri - (0.6134 * P - 0.1443 * P) - Math.Sqrt(Math.Pow((0.1443 * P), 2) - Math.Pow((0.1443 * P) * Math.Sin((60 * Math.PI) / 180), 2));
 
-            double V_Mittelpunkt = 0;
+            double V_Mittelpunkt = Gesamtlänge;
             double H_Mittelpunkt = Ri - ((0.6134 * P) - 0.1443 * P);
 
             Factory2D catFactory2D2 = hsp_catiaProfil_Gewinde.OpenEdition();
@@ -651,6 +662,83 @@ namespace Wpf_Steuerprogramm
             return hsp_catiaProfil_Gewinde;
         }
 
-    }
 
+        internal void ErzeugeGewindeHelix(object[] ParameterListe)
+        {
+            // Listen Werte wieder in richtige Datentypen umwandeln
+            int Kopf = Convert.ToInt32(ParameterListe[0]);
+            double Durchmesser = Convert.ToDouble(ParameterListe[1]);
+            double Gewindelänge = Convert.ToDouble(ParameterListe[2]);
+            double Schaftlänge = Convert.ToDouble(ParameterListe[3]);
+            double Steigung = Convert.ToDouble(ParameterListe[4]);
+            int Gewindeart = Convert.ToInt32(ParameterListe[5]);
+            double Schlüsselweite = Convert.ToDouble(ParameterListe[6]);
+            double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
+            double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
+            string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+
+            double helixAchseStart = Gewindelänge + Schaftlänge + Kopfhöhe;
+            Double P = Steigung;
+            Double Ri = Durchmesser / 2;
+
+            myPart = hsp_catiaPart.Part;
+            myBody = myPart.MainBody;
+
+            HSF = (HybridShapeFactory)myPart.HybridShapeFactory;
+
+            Sketch myGewinde = makeGewindeSkizze(ParameterListe);
+
+            HybridShapeDirection HelixDir = HSF.AddNewDirectionByCoord(1, 0, 0);
+            Reference RefHelixDir = myPart.CreateReferenceFromObject(HelixDir);
+
+            HybridShapePointCoord HelixStartpunkt = HSF.AddNewPointCoord(helixAchseStart, 0, Ri);
+            Reference RefHelixStartpunkt = myPart.CreateReferenceFromObject(HelixStartpunkt);
+
+            HybridShapeHelix Helix = HSF.AddNewHelix(RefHelixDir, true, RefHelixStartpunkt, P, Gewindelänge, false, 0, 0, true);
+
+            Reference RefHelix = myPart.CreateReferenceFromObject(Helix);
+            Reference RefmyGewinde = myPart.CreateReferenceFromObject(myGewinde);
+
+            hsp_catiaPart.Part.Update();
+
+            myPart.InWorkObject = myBody;
+
+            OriginElements catOriginElements = this.hsp_catiaPart.Part.OriginElements;
+            Reference RefmyPlaneZX = (Reference)catOriginElements.PlaneZX;
+
+
+
+            Slot GewindeRille = catShapeFactorySchaft.AddNewSlotFromRef(RefmyGewinde, RefHelix);
+
+            Reference RefmyPad = myPart.CreateReferenceFromBRepName(
+                "RSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf11:());WithTemporaryBody;WithoutBuildError;WithSelectingFeatureSupport;MFBRepVersion_CXR15)", Schaft);
+
+
+
+            if (Kopf == 1 || Kopf == 2)
+            {
+                HybridShapeSurfaceExplicit GewindestangenSurface = HSF.AddNewSurfaceDatum(RefmyPad);
+                Reference RefGewindestangenSurface = myPart.CreateReferenceFromBRepName(
+                "FSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf12:());WithTemporaryBody;WithoutBuildError;WithInitialFeatureSupport;MFBRepVersion_CXR29)", Schaft);
+                GewindeRille.ReferenceSurfaceElement = RefGewindestangenSurface;
+            }
+
+            if (Kopf == 3)
+            {
+                HybridShapeSurfaceExplicit GewindestangenSurface = HSF.AddNewSurfaceDatum(RefmyPad);
+                Reference RefGewindestangenSurface = myPart.CreateReferenceFromBRepName(
+                "FSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf12:());WithTemporaryBody;WithoutBuildError;WithInitialFeatureSupport;MFBRepVersion_CXR29)", Schaft);
+                GewindeRille.ReferenceSurfaceElement = RefGewindestangenSurface;
+            }
+            myPart.Update();
+
+
+
+            Reference RefGewindeRille = myPart.CreateReferenceFromObject(GewindeRille);
+
+            myPart.Update();
+        }
+
+
+    }
 }
