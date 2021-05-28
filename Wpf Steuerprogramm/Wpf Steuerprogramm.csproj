@@ -39,7 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Interop.HybridShapeTypeLib">
-      <HintPath>..\..\..\..\..\..\Interop.HybridShapeTypeLib.dll</HintPath>
+      <HintPath>..\Verweise\Interop.HybridShapeTypeLib.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Interop.INFITF">
@@ -47,7 +47,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Interop.KnowledgewareTypeLib">
-      <HintPath>..\..\..\..\..\..\Interop.KnowledgewareTypeLib.dll</HintPath>
+      <HintPath>..\Verweise\Interop.KnowledgewareTypeLib.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Interop.MECMOD">
@@ -59,7 +59,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Interop.ProductStructureTypeLib">
-      <HintPath>..\..\..\..\..\..\Interop.ProductStructureTypeLib.dll</HintPath>
+      <HintPath>..\Verweise\Interop.ProductStructureTypeLib.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
