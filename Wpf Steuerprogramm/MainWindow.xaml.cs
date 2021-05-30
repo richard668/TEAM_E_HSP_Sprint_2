@@ -19,6 +19,7 @@ namespace Wpf_Steuerprogramm
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
+    /// 
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -29,6 +30,9 @@ namespace Wpf_Steuerprogramm
 
 
         Schraube Bolt = new Schraube();
+
+        bool GewindeFeature = true;
+        bool GewindeHelix = false;
 
         #region Berechnen Button
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -565,12 +569,24 @@ namespace Wpf_Steuerprogramm
                 txtBox_Steigung.Background = Brushes.Transparent;
             }
         }
+
+        public void GewindefeatureIsChecked(object sender, RoutedEventArgs e)
+        {
+            GewindeFeature = true;
+            GewindeHelix = false;
+        }
+
+        public void GewindeHelixIsChecked(object sender, RoutedEventArgs e)
+        {
+            GewindeFeature = false;
+            GewindeHelix = true;
+        }
         #endregion Steuerbefehle WPF
 
         private void btn_CAD_Click(object sender, RoutedEventArgs e)
         {
 
-            object[] Parameter = new object[10];
+            object[] Parameter = new object[12];
             Parameter[0] = Bolt.Kopf; //int
             Parameter[1] = Bolt.Durchmesser; //double
             Parameter[2] = Bolt.Gewindelänge; //double
@@ -581,9 +597,13 @@ namespace Wpf_Steuerprogramm
             Parameter[7] = Bolt.Kopfhöhe; //double
             Parameter[8] = Bolt.Kopfdurchmesser; //double
             Parameter[9] = Bolt.Schraubenrichtung; //string
+            Parameter[10] = GewindeFeature;
+            Parameter[11] = GewindeHelix;
 
             new CAD(Parameter);
         }
+
+       
     }
 
 

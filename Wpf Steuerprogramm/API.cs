@@ -46,6 +46,9 @@ namespace Wpf_Steuerprogramm
             double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
             double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
             string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+            bool GewindeFeature = Convert.ToBoolean(ParameterListe[10]);
+            bool GewindeHelix = Convert.ToBoolean(ParameterListe[11]);
+
             //Hier wird das gesamte Modell erstellt, wenn nichts schief geht
             try
             {
@@ -84,10 +87,17 @@ namespace Wpf_Steuerprogramm
 
 
                     //Erstellt Gewinde am Schaft
-                    //Gewindefeature(ParameterListe);
-                    //makeGewindeSkizze(ParameterListe);
-                    ErzeugeGewindeHelix(ParameterListe);
-
+                    if (GewindeFeature)
+                    {
+                        Gewindefeature(ParameterListe);
+                    }
+                   
+                    if(GewindeHelix)
+                    {
+                        //makeGewindeSkizze(ParameterListe);
+                        ErzeugeGewindeHelix(ParameterListe);
+                    }
+                    
 
                 }
 
