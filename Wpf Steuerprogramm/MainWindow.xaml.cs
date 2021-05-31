@@ -99,7 +99,7 @@ namespace Wpf_Steuerprogramm
             Bolt.MaxBelastung = Konsolenprogramm.BerechnungMaxBelastung(Bolt.Durchmesser, Bolt.Steigung, Bolt.MetrischeTabelle(), Bolt.Streckgrenze, Bolt.Gewindeart, Bolt.WhitworthTabelle());
             Bolt.WhitworthDurchmesser = Konsolenprogramm.AusgabeWitworthdurchmesser(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
             Bolt.WhitworthFlankendurchmesser = Konsolenprogramm.AusgabeWitworthflankendurchmesser(Bolt.WhitworthTabelle(), Bolt.Durchmesser);
-            Bolt.Schraubenrichtung = Gewinderichtung();
+            (Bolt.Schraubenrichtung, Bolt.SchraubenrichtungInt) = Gewinderichtung();
             Bolt.SchraubenbezeichnungMX = Konsolenprogramm.SchraubenbezeichnungMX(Bolt.Gewindeart, Bolt.Kopf, Bolt.Durchmesser, Bolt.Gesamtlänge, Bolt.Festigkeitsklasse, Bolt.Schraubenrichtung);
             Bolt.SchraubenbezeichnungMF = Konsolenprogramm.SchraubenbezeichnungMF(Bolt.Gewindeart, Bolt.Kopf, Bolt.Durchmesser, Bolt.Steigung, Bolt.Gesamtlänge, Bolt.Festigkeitsklasse, Bolt.Schraubenrichtung);
             Bolt.Gesamtpreis = Konsolenprogramm.Preisberechnung(Bolt.Gewindeart, Bolt.Kopf, (double)Bolt.Gewindemasse, Bolt.Schaftmasse, Bolt.Kopfmasse);
@@ -211,12 +211,14 @@ namespace Wpf_Steuerprogramm
         #region Eingabemethoden
         //Eingabemethoden
 
-        public string Gewinderichtung()
+        public (string, int) Gewinderichtung()
         {
             string gewinderichtung = "";
+            int gewinderichtungInt = 0;
             if ((bool)rb_Linksgewinde.IsChecked)
             {
                 gewinderichtung = " LH ";
+                gewinderichtungInt = 1;
             }
 
             if ((bool)rb_Rechtsgewinde.IsChecked)
@@ -224,7 +226,7 @@ namespace Wpf_Steuerprogramm
                 gewinderichtung = " ";
             }
 
-            return gewinderichtung;
+            return (gewinderichtung, gewinderichtungInt);
         }
 
         public int rb_Gewindeart()
@@ -596,14 +598,14 @@ namespace Wpf_Steuerprogramm
             Parameter[6] = Bolt.Schlüsselweite; //double
             Parameter[7] = Bolt.Kopfhöhe; //double
             Parameter[8] = Bolt.Kopfdurchmesser; //double
-            Parameter[9] = Bolt.Schraubenrichtung; //string
+            Parameter[9] = Bolt.SchraubenrichtungInt; //string
             Parameter[10] = GewindeFeature;
             Parameter[11] = GewindeHelix;
 
             new CAD(Parameter);
         }
 
-       
+
     }
 
 
@@ -1679,6 +1681,7 @@ namespace Wpf_Steuerprogramm
         public string SchraubenbezeichnungWW { get; set; }
         public object DurchmesserWW_Zoll { get; set; }
         public double DurchmesserWW_Zoll_mm { get; internal set; }
+        public object SchraubenrichtungInt { get; internal set; }
 
         public double[,] MetrischeTabelle()
         {

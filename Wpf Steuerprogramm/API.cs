@@ -697,7 +697,7 @@ namespace Wpf_Steuerprogramm
             double Schlüsselweite = Convert.ToDouble(ParameterListe[6]);
             double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
             double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
-            string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+            int SchraubenrichtungInt = Convert.ToInt32(ParameterListe[9]);
 
             double helixAchseStart = Gewindelänge + Schaftlänge + Kopfhöhe;
             Double P = Steigung;
@@ -716,7 +716,17 @@ namespace Wpf_Steuerprogramm
             HybridShapePointCoord HelixStartpunkt = HSF.AddNewPointCoord(helixAchseStart, 0, Ri);
             Reference RefHelixStartpunkt = myPart.CreateReferenceFromObject(HelixStartpunkt);
 
-            Helix = HSF.AddNewHelix(RefHelixDir, true, RefHelixStartpunkt, P, Gewindelänge, false, 0, 0, true);
+            if (SchraubenrichtungInt == 0)
+            {
+                Helix = HSF.AddNewHelix(RefHelixDir, true, RefHelixStartpunkt, P, Gewindelänge, false, 0, 0, true);
+            }
+
+            if (SchraubenrichtungInt == 1)
+            {
+                Helix = HSF.AddNewHelix(RefHelixDir, true, RefHelixStartpunkt, P, Gewindelänge, true, 0, 0, true);
+            }
+
+
 
             Reference RefHelix = myPart.CreateReferenceFromObject(Helix);
             Reference RefmyGewinde = myPart.CreateReferenceFromObject(myGewinde);
