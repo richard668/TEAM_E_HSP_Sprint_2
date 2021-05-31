@@ -99,8 +99,13 @@ namespace Wpf_Steuerprogramm
                     {
                         //makeGewindeSkizze(ParameterListe);
                         ErzeugeGewindeHelix(ParameterListe);
-                        ErzeugeFase(ParameterListe);
+
+                        ErstelleFaseProfil(ParameterListe);
+                        ErstelleFase();
                     }
+
+
+
 
 
                 }
@@ -170,6 +175,7 @@ namespace Wpf_Steuerprogramm
             hsp_catiaProfil_Gewinde = catSketches1.Add(catReference2);
             hsp_catiaSkizzeTest = catSketches1.Add(catReference2);
             hsp_catiaProfil_Fase = catSketches1.Add(catReference2);
+
 
             // Achsensystem in Skizze erstellen 
             ErzeugeAchsensystem();
@@ -755,7 +761,7 @@ namespace Wpf_Steuerprogramm
             myPart.Update();
         }
 
-        internal void ErzeugeFase(object[] ParameterListe)
+        internal void ErstelleFaseProfil(object[] ParameterListe)
         {
             // Listen Werte wieder in richtige Datentypen umwandeln
             int Kopf = Convert.ToInt32(ParameterListe[0]);
@@ -803,9 +809,26 @@ namespace Wpf_Steuerprogramm
             seite.StartPoint = unten;
             seite.EndPoint = rechts;
 
+
+
             hsp_catiaProfil_Fase.CloseEdition();
             hsp_catiaPart.Part.Update();
 
         }
+        internal void ErstelleFase()
+        {
+            hsp_catiaPart.Part.InWorkObject = myBody;
+            hsp_catiaPart.Part.Update();
+
+            HybridShapeDirection HelixDir = HSF.AddNewDirectionByCoord(1, 0, 0);
+            Reference RefHelixDir = hsp_catiaPart.Part.CreateReferenceFromObject(HelixDir);
+
+            Groove myChamfer = SF.AddNewGroove(hsp_catiaProfil_Fase);
+            myChamfer.RevoluteAxis = RefHelixDir;
+
+
+            hsp_catiaPart.Part.Update();
+        }
+
     }
 }
