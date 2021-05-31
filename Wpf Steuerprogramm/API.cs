@@ -526,7 +526,7 @@ namespace Wpf_Steuerprogramm
             double Schlüsselweite = Convert.ToDouble(ParameterListe[6]);
             double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
             double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
-            string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+            int SchraubenrichtungInt = Convert.ToInt32(ParameterListe[9]);
             myPart = hsp_catiaPart.Part;
             // Gewinde...
             // ... Referenzen lateral und limit erzeugen
@@ -544,7 +544,15 @@ namespace Wpf_Steuerprogramm
 
                 // ... Gewinde erzeugen, Parameter setzen
                 PARTITF.Thread thread1 = SF.AddNewThreadWithOutRef();
+
+
                 thread1.Side = CatThreadSide.catRightSide;
+
+                if (SchraubenrichtungInt == 1)
+                {
+                    thread1.Side = CatThreadSide.catLeftSide;
+                }
+
                 thread1.Diameter = Durchmesser;
                 thread1.Depth = Gewindelänge;
                 thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
@@ -580,7 +588,14 @@ namespace Wpf_Steuerprogramm
 
                 // ... Gewinde erzeugen, Parameter setzen
                 PARTITF.Thread thread1 = SF.AddNewThreadWithOutRef();
+
                 thread1.Side = CatThreadSide.catRightSide;
+
+                if (SchraubenrichtungInt == 1)
+                {
+                    thread1.Side = CatThreadSide.catLeftSide;
+                }
+
                 thread1.Diameter = Durchmesser;
                 thread1.Depth = Gewindelänge;
                 thread1.LateralFaceElement = RefMantelflaeche; // Referenz lateral
