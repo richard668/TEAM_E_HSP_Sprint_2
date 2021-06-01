@@ -772,9 +772,9 @@ namespace Wpf_Steuerprogramm
 
             if (Kopf == 3)
             {
-                HybridShapeSurfaceExplicit GewindestangenSurface = HSF.AddNewSurfaceDatum(RefmyPad);
+                //HybridShapeSurfaceExplicit GewindestangenSurface = HSF.AddNewSurfaceDatum(RefmyPad);
                 Reference RefGewindestangenSurface = myPart.CreateReferenceFromBRepName(
-                "FSur:(Face:(Brp:(Pad.2;0:(Brp:(Sketch.2;1)));None:();Cf12:());WithTemporaryBody;WithoutBuildError;WithInitialFeatureSupport;MFBRepVersion_CXR29)", Schaft);
+                "FSur:(Face:(Brp:(Pad.1;0:(Brp:(Sketch.2;1)));None:();Cf12:());WithTemporaryBody;WithoutBuildError;WithInitialFeatureSupport;MFBRepVersion_CXR29)", Schaft);
                 GewindeRille.ReferenceSurfaceElement = RefGewindestangenSurface;
             }
             myPart.Update();
