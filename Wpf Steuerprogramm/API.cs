@@ -100,11 +100,11 @@ namespace Wpf_Steuerprogramm
                         //makeGewindeSkizze(ParameterListe);
                         ErzeugeGewindeHelix(ParameterListe);
 
-                        ErstelleFaseProfil(ParameterListe);
-                        ErstelleFase();
+
                     }
 
-
+                    ErstelleFaseProfil(ParameterListe);
+                    ErstelleFase(ParameterListe);
 
 
 
@@ -798,7 +798,7 @@ namespace Wpf_Steuerprogramm
             double Schlüsselweite = Convert.ToDouble(ParameterListe[6]);
             double Kopfhöhe = Convert.ToDouble(ParameterListe[7]);
             double Kopfdurchmesser = Convert.ToDouble(ParameterListe[8]);
-            string Schraubenrichtung = Convert.ToString(ParameterListe[9]);
+            int SchraubenrichtungInt = Convert.ToInt32(ParameterListe[9]);
 
             double Gesamtlänge = Gewindelänge + Schaftlänge + Kopfhöhe;
             Double P = Steigung;
@@ -840,16 +840,35 @@ namespace Wpf_Steuerprogramm
             hsp_catiaPart.Part.Update();
 
         }
-        internal void ErstelleFase()
+        internal void ErstelleFase(object[] ParameterListe)
         {
+            bool GewindeFeature = Convert.ToBoolean(ParameterListe[10]);
+            bool GewindeHelix = Convert.ToBoolean(ParameterListe[11]);
+
+            myBody = hsp_catiaPart.Part.MainBody;
             hsp_catiaPart.Part.InWorkObject = myBody;
-            hsp_catiaPart.Part.Update();
 
-            HybridShapeDirection HelixDir = HSF.AddNewDirectionByCoord(1, 0, 0);
-            Reference RefHelixDir = hsp_catiaPart.Part.CreateReferenceFromObject(HelixDir);
+            if (GewindeHelix)
+            {
+                HybridShapeDirection HelixDir = HSF.AddNewDirectionByCoord(1, 0, 0);
+                Reference RefHelixDir = hsp_catiaPart.Part.CreateReferenceFromObject(HelixDir);
 
-            Groove myChamfer = SF.AddNewGroove(hsp_catiaProfil_Fase);
-            myChamfer.RevoluteAxis = RefHelixDir;
+                Groove myChamfer = SF.AddNewGroove(hsp_catiaProfil_Fase);
+                myChamfer.RevoluteAxis = RefHelixDir;
+
+            }
+
+            else
+            {
+                Groove grooveFase = SF.AddNewGroove(hsp_catiaProfil_Fase);
+
+                GeometricElements element1 = hsp_catiaProfil_Gewinde.GeometricElements;
+
+                Axis2D axis2D1 = (Axis2D)element1.Item("Absolute Achse");
+                Reference reference3 = (Reference)axis2D1.GetItem("V-Richtung");
+
+                grooveFase.RevoluteAxis = reference3;
+            }
 
 
             hsp_catiaPart.Part.Update();
