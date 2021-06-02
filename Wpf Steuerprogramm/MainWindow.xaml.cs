@@ -133,6 +133,7 @@ namespace Wpf_Steuerprogramm
             string Gangzahl = "";
             string Schlüsselweite = "";
             string Kopfhöhe = "";
+            string Steigung = "";
 
             if (Bolt.Gewindeart == 1)
             {
@@ -140,6 +141,7 @@ namespace Wpf_Steuerprogramm
                 Durchgangsbohrung = "Durchgangsbohrung: " + Bolt.Durchgangsbohrung + " mm\n";
                 Schlüsselweite = "Schlüsselweite: " + Bolt.Schlüsselweite + "mm\n";
                 Kopfhöhe = "Kopfhöhe: " + Bolt.Kopfhöhe + "mm\n";
+                Steigung = "Steigung: " + Bolt.Steigung + "mm\n";
                 lbl_Masse.Visibility = Visibility.Visible;
                 lbl_Beschreibung2.Visibility = Visibility.Visible;
             }
@@ -149,6 +151,7 @@ namespace Wpf_Steuerprogramm
                 Durchgangsbohrung = "Durchgangsbohrung: " + Bolt.Durchgangsbohrung + " mm";
                 Schlüsselweite = "Schlüsselweite: " + Bolt.Schlüsselweite + "mm\n";
                 Kopfhöhe = "Kopfhöhe: " + Bolt.Kopfhöhe + "mm\n";
+                Steigung = "Steigung: " + Bolt.Steigung + "mm\n";
                 lbl_Masse.Visibility = Visibility.Visible;
                 lbl_Beschreibung2.Visibility = Visibility.Visible;
             }
@@ -183,8 +186,8 @@ namespace Wpf_Steuerprogramm
 
 
             // Ausgabe im Label geometrische Informationen
-            lbl_geoInfo_links.Content = Schlüsselweite + Kopfhöhe + Kopfdurchmesser + Gangzahl;
-            lbl_geoInfo_rechts.Content = Flankendurchmesser + "Flankenwinkel: " + Bolt.Flankenwinkel + "°\n" + "Steigung: " + Bolt.Steigung;
+            lbl_geoInfo_links.Content = Schlüsselweite + Kopfhöhe + Kopfdurchmesser;
+            lbl_geoInfo_rechts.Content = Flankendurchmesser + "Flankenwinkel: " + Bolt.Flankenwinkel + "°\n" + Steigung + Gangzahl;
 
             // Ausgabe im Label Masse
             lbl_Masse.Content = Bolt.Gesamtmasse + " g\n";
